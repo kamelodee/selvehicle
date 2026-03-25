@@ -7,6 +7,19 @@ version: "3.9"
 #   docker-compose -f deploy/alicloud/docker-compose.prod.yml --env-file .env.prod up -d
 
 services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${RDS_PASSWORD}
+      MYSQL_DATABASE: ${RDS_DB}
+      MYSQL_USER: ${RDS_USER}
+      MYSQL_PASSWORD: ${RDS_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
   nginx:
     image: nginx:1.25-alpine
     restart: always
@@ -20,6 +33,8 @@ services:
       - server
 
   server:
+    depends_on:
+      - db
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/${ACR_REPO}:${IMAGE_TAG:-latest}
     build:
       context: ../..
@@ -58,3 +73,6 @@ services:
       options:
         max-size: "50m"
         max-file: "5"
+
+volumes:
+  mysql_data:
