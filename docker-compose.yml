@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: vehi_db
+      MYSQL_USER: vehi_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-changeme}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootchangeme}
+    volumes:
+      - mysqldata:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "vehi_user", "--password=${MYSQL_PASSWORD:-changeme}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://vehi_user:${MYSQL_PASSWORD:-changeme}@db:3306/vehi_db
+      TCP_HOST: "0.0.0.0"
+      TCP_PORT: "8808"
+      HTTP_HOST: "0.0.0.0"
+      HTTP_PORT: "8000"
+      IDLE_TIMEOUT_SECS: "120"
+      LOG_LEVEL: "INFO"
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      TOKEN_EXPIRE_HOURS: "8"
+    ports:
+      - "8808:8808"   # Vehicle terminal TCP connections
+      - "8000:8000"   # Admin REST API + dashboard
+
+volumes:
+  mysqldata:

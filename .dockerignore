@@ -1,0 +1,48 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Dev/test files
+*.db
+*.sqlite3
+jt808.db
+test_simulator.py
+seed.py
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# Docs
+*.md
+docs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deploy configs (not needed inside container)
+deploy/
