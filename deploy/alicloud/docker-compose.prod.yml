@@ -21,6 +21,9 @@ services:
 
   server:
     image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/${ACR_REPO}:${IMAGE_TAG:-latest}
+    build:
+      context: ../..
+      dockerfile: Dockerfile
     restart: always
     environment:
       # ── Database (Alibaba RDS endpoint) ──────────────────────────────────
